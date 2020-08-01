@@ -1,4 +1,4 @@
-
+import urllib
 from hashlib import sha1
 from re import match
 
@@ -17,13 +17,12 @@ class UrlBuilder:
     def buildUrl(self, api_call, params={}):
         url = self.bbbServerBaseUrl
         url += api_call + "?"
+
         for key, value in params.items():
             if isinstance(value, bool):
-                value = "true" if value else "false"
-            else:
-                value = str(value)
-            url += key + "=" + value + "&"
+                params[key] = "true" if value else "false"
 
+        url += urllib.parse.urlencode(params)
         url += "checksum=" + self.__get_checksum(api_call, params)
         return url
 
