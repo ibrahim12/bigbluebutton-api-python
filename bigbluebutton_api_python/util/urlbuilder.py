@@ -28,6 +28,8 @@ class UrlBuilder:
         if not params:
             params = {}
 
+        params = params.copy()
+
         url = self.bbbServerBaseUrl
         url += api_call + "?"
 

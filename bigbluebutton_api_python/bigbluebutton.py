@@ -36,7 +36,13 @@ class BigBlueButton:
         response = self.__send_api_request(ApiMethod.VERSION)
         return ApiVersionResponse(response)
 
-    def create_meeting(self, meeting_id, params={}, meta={}, slides=None):
+    def create_meeting(self, meeting_id, params=None, meta=None, slides=None):
+        if not params:
+            params = {}
+
+        if not meta:
+            meta = {}
+
         params["meetingID"] = meeting_id
         if meta != {}:
             for key, val in meta.items():
@@ -47,7 +53,10 @@ class BigBlueButton:
             response = self.__send_api_request(ApiMethod.CREATE, params)
         return CreateMeetingResponse(response)
 
-    def get_join_meeting_url(self, full_name, meeting_id, password, params={}):
+    def get_join_meeting_url(self, full_name, meeting_id, password, params=None):
+        if not params:
+            params = {}
+
         params["fullName"] = full_name
         params["meetingID"] = meeting_id
         params["password"] = password
@@ -96,7 +105,10 @@ class BigBlueButton:
         response = self.__send_api_request(ApiMethod.DELETE_RECORDINGS, params)
         return DeleteRecordingsResponse(response)
 
-    def update_recordings(self, recording_id, meta={}):
+    def update_recordings(self, recording_id, meta=None):
+        if not meta:
+            meta = {}
+
         params = {"recordID": recording_id}
         if meta != {}:
             for key, val in meta.items():
@@ -127,7 +139,10 @@ class BigBlueButton:
                                                                            "meetingID": meeting_id})
         return SetConfigXMLResponse(response)
 
-    def __send_api_request(self, api_call, params={}, data=None):
+    def __send_api_request(self, api_call, params=None, data=None):
+        if not params:
+            params = {}
+
         url = self.__urlBuilder.buildUrl(api_call, params)
 
         # if data is none, then we send a GET request, if not, then we send a POST request
