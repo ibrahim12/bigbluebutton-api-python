@@ -13,28 +13,25 @@ class UrlBuilder:
 
         self.securitySalt         = securitySalt
         self.bbbServerBaseUrl     = bbbServerBaseUrl
+    def prepare_params(self, params={}):
+        for key, value in params.items():
+            if isinstance(value, bool):
+                params[key] = "true" if value else "false"
+            else:
+                params[key] = str(value)
+        return params
 
     def buildUrl(self, api_call, params={}):
         url = self.bbbServerBaseUrl
         url += api_call + "?"
 
-        for key, value in params.items():
-            if isinstance(value, bool):
-                params[key] = "true" if value else "false"
-
-        url += urllib.parse.urlencode(params)
-        url += "checksum=" + self.__get_checksum(api_call, params)
-        return url
+        params = self.prepare_params(params)
+        params['checksum'] = self.__get_checksum(api_call, params)
+        return url + urllib.parse.urlencode(params)
 
     def __get_checksum(self, api_call, params={}):
         secret_str = api_call
-        for key, value in params.items():
-            if isinstance(value, bool):
-                value = "true" if value else "false"
-            else:
-                value = str(value)
-            secret_str += key + "=" + value + "&"
-        if secret_str.endswith("&"):
-            secret_str = secret_str[:-1]
+        params = self.prepare_params(params)
+        secret_str += urllib.parse.urlencode(params)
         secret_str += self.securitySalt
         return sha1(secret_str.encode('utf-8')).hexdigest()
