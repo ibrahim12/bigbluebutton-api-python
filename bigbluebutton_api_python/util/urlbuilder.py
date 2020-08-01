@@ -13,7 +13,10 @@ class UrlBuilder:
 
         self.securitySalt         = securitySalt
         self.bbbServerBaseUrl     = bbbServerBaseUrl
-    def prepare_params(self, params={}):
+    def prepare_params(self, params=None):
+        if not params:
+            params = {}
+
         for key, value in params.items():
             if isinstance(value, bool):
                 params[key] = "true" if value else "false"
@@ -21,7 +24,10 @@ class UrlBuilder:
                 params[key] = str(value)
         return params
 
-    def buildUrl(self, api_call, params={}):
+    def buildUrl(self, api_call, params=None):
+        if not params:
+            params = {}
+
         url = self.bbbServerBaseUrl
         url += api_call + "?"
 
@@ -29,7 +35,10 @@ class UrlBuilder:
         params['checksum'] = self.__get_checksum(api_call, params)
         return url + urllib.parse.urlencode(params)
 
-    def __get_checksum(self, api_call, params={}):
+    def __get_checksum(self, api_call, params=None):
+        if not params:
+            params = {}
+
         secret_str = api_call
         params = self.prepare_params(params)
         secret_str += urllib.parse.urlencode(params)
